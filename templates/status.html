@@ -122,7 +122,7 @@
             background: var(--youtube-accent);
             transform: translateY(-2px);
         }
-        .download-btn {
+        .download-btn, .copy-btn {
             background: var(--youtube-red);
             color: #FFF;
             border-radius: 8px;
@@ -130,11 +130,11 @@
             transition: all 0.3s;
             font-size: 0.9rem;
         }
-        .download-btn:hover {
+        .download-btn:hover, .copy-btn:hover {
             background: var(--youtube-accent);
             transform: scale(1.05);
         }
-        #result {
+        #download-result, #search-result {
             margin-top: 20px;
             display: none;
             background: #F8F9FA;
@@ -170,6 +170,7 @@
             border-radius: 5px;
             border-left: 5px solid var(--youtube-red);
             font-size: 14px;
+            overflow-x: auto;
         }
 
         footer {
@@ -216,7 +217,7 @@
             .status-card { padding: 20px; }
             .form-container { padding: 20px; }
             .docs-card { padding: 20px; }
-            .download-btn { font-size: 0.8rem; padding: 8px 16px; }
+            .download-btn, .copy-btn { font-size: 0.8rem; padding: 8px 16px; }
         }
     </style>
 </head>
@@ -246,7 +247,7 @@
     <section class="hero">
         <div class="container">
             <h1><i class="fab fa-youtube me-2"></i> YouTube Downloader API</h1>
-            <p>Download YouTube videos and audio in multiple formats and qualities with our fast API by <a href="https://t.me/ISmartCoder" target="_blank" class="text-white"><i class="fab fa-telegram-plane me-1"></i>@ISmartCoder</a>.</p>
+            <p>Download YouTube videos and audio or search for videos with our fast API by <a href="https://t.me/ISmartCoder" target="_blank" class="text-white"><i class="fab fa-telegram-plane me-1"></i>@ISmartCoder</a>.</p>
             <a href="#test" class="btn btn-youtube btn-lg mt-3">Try It Now</a>
         </div>
     </section>
@@ -268,14 +269,25 @@
         <div class="container">
             <h2 class="text-center mb-4"><i class="fas fa-download me-2"></i> Test the API</h2>
             <div class="form-container">
-                <form id="test-form">
+                <h5 class="mb-3">Download Video</h5>
+                <form id="download-form">
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-danger text-white"><i class="fab fa-youtube"></i></span>
                         <input type="url" class="form-control" id="youtube-url" placeholder="e.g., https://www.youtube.com/watch?v=pCr2XfPpWjU" required>
                         <button type="submit" class="btn btn-youtube"><i class="fas fa-cloud-download-alt me-2"></i>Fetch Downloads</button>
                     </div>
                 </form>
-                <div id="result"></div>
+                <div id="download-result"></div>
+
+                <h5 class="mt-4 mb-3">Search Videos</h5>
+                <form id="search-form">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text bg-danger text-white"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="search-query" placeholder="e.g., python tutorial" required>
+                        <button type="submit" class="btn btn-youtube"><i class="fas fa-search me-2"></i>Search</button>
+                    </div>
+                </form>
+                <div id="search-result"></div>
             </div>
         </div>
     </section>
@@ -285,13 +297,13 @@
         <div class="container">
             <h2 class="text-center mb-4"><i class="fas fa-book me-2"></i> API Documentation</h2>
             <div class="docs-card">
-                <h4>Endpoint</h4>
+                <h4>Download Endpoint</h4>
                 <p><code>GET /dl?url={youtube_url}</code></p>
-                <h4>Parameters</h4>
+                <h5>Parameters</h5>
                 <ul>
                     <li><strong>url</strong>: (Required) The YouTube video URL (e.g., <code>https://www.youtube.com/watch?v=pCr2XfPpWjU</code>)</li>
                 </ul>
-                <h4>Response</h4>
+                <h5>Response</h5>
                 <p>Success (200):</p>
                 <pre>
 {
@@ -300,11 +312,10 @@
     "title": "Video Title",
     "thumbnail": "Thumbnail URL",
     "thumbnail_url": "Fallback Thumbnail URL",
-    "url": "YouTube Video URL",
+    "url": "Download URL or YouTube URL",
     "success": true,
     "source": "youtube",
     "author": "",
-    "duration": 6995,
     "medias": [
         {
             "formatId": 18,
@@ -330,7 +341,6 @@
             "mimeType": "audio/mp4; codecs=\"mp4a.40.2\"",
             "duration": 116
         }
-        // ... more formats
     ],
     "type": "multiple",
     "error": false,
@@ -346,11 +356,45 @@
     "contact": "@ISmartCoder"
 }
                 </pre>
-                <h4>Example Request</h4>
+                <h5>Example Request</h5>
                 <pre>GET /dl?url=https://www.youtube.com/watch?v=pCr2XfPpWjU</pre>
+
+                <h4>Search Endpoint</h4>
+                <p><code>GET /search?q={search_query}</code></p>
+                <h5>Parameters</h5>
+                <ul>
+                    <li><strong>q</strong>: (Required) The search query (e.g., <code>python tutorial</code>)</li>
+                </ul>
+                <h5>Response</h5>
+                <p>Success (200):</p>
+                <pre>
+{
+    "api_owner": "@ISmartCoder",
+    "updates_channel": "@TheSmartDevs",
+    "result": [
+        {
+            "title": "Video Title",
+            "imageUrl": "Thumbnail URL",
+            "link": "https://youtube.com/watch?v=video_id"
+        }
+    ]
+}
+                </pre>
+                <p>Error (400 or 500):</p>
+                <pre>
+{
+    "api_owner": "@ISmartCoder",
+    "updates_channel": "@TheSmartDevs",
+    "error": "Error message"
+}
+                </pre>
+                <h5>Example Request</h5>
+                <pre>GET /search?q=python+tutorial</pre>
+
                 <h4>Notes</h4>
                 <ul>
-                    <li>Ensure the YouTube URL is valid and properly formatted.</li>
+                    <li>Ensure the YouTube URL is valid and properly formatted for the download endpoint.</li>
+                    <li>Search queries should be URL-encoded for special characters.</li>
                     <li>For support, contact <a href="https://t.me/ISmartCoder" target="_blank"><i class="fab fa-telegram-plane me-1"></i>@ISmartCoder</a>.</li>
                     <li>Stay updated via our <a href="https://t.me/TheSmartDevs" target="_blank"><i class="fab fa-telegram-plane me-1"></i>Telegram channel</a>.</li>
                 </ul>
@@ -391,7 +435,7 @@
         function deduplicateFormats(medias) {
             const seen = new Map();
             medias.forEach(item => {
-                if (!seen.has(item.formatId) || item.bitrate > seen.get(item.formatId).bitrate || item.lmt > seen.get(item.formatId).lmt) {
+                if (!seen.has(item.formatId) || (item.bitrate > seen.get(item.formatId).bitrate || item.lmt > seen.get(item.formatId).lmt)) {
                     seen.set(item.formatId, item);
                 }
             });
@@ -430,11 +474,11 @@
             }
         }
 
-        // Form Submission
-        document.getElementById('test-form').addEventListener('submit', async (e) => {
+        // Download Form Submission
+        document.getElementById('download-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const urlInput = document.getElementById('youtube-url').value;
-            const resultDiv = document.getElementById('result');
+            const resultDiv = document.getElementById('download-result');
             resultDiv.style.display = 'none';
             resultDiv.innerHTML = '<p><i class="fas fa-spinner fa-spin me-2"></i>Loading...</p>';
 
@@ -505,6 +549,52 @@
                     resultDiv.innerHTML = html;
                 } else {
                     resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Error: ${data.error || 'No download URLs found'}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}</div>`;
+            }
+            resultDiv.style.display = 'block';
+        });
+
+        // Search Form Submission
+        document.getElementById('search-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const queryInput = document.getElementById('search-query').value;
+            const resultDiv = document.getElementById('search-result');
+            resultDiv.style.display = 'none';
+            resultDiv.innerHTML = '<p><i class="fas fa-spinner fa-spin me-2"></i>Loading...</p>';
+
+            try {
+                const response = await fetch(`/search?q=${encodeURIComponent(queryInput)}`, { timeout: 15000 });
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+
+                if (data.result && !data.error) {
+                    let html = `<h5 class="mb-3">Search Results for "${queryInput}"</h5>`;
+                    if (data.result.length === 0) {
+                        html += `<p>No videos found.</p>`;
+                    } else {
+                        html += `<div class="row">`;
+                        data.result.forEach(video => {
+                            html += `
+                                <div class="col-md-4 col-sm-6 mb-3">
+                                    <div class="card media-card">
+                                        <img src="${video.imageUrl || 'https://img.youtube.com/vi/default/hqdefault.jpg'}" alt="Video Thumbnail" class="card-img-top">
+                                        <div class="card-body">
+                                            <h6 class="card-title">${video.title || 'N/A'}</h6>
+                                            <button class="btn copy-btn w-100" onclick="navigator.clipboard.writeText('${video.link}').then(() => alert('Link copied!'))"><i class="fas fa-copy me-2"></i>Copy Link</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    resultDiv.innerHTML = html;
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Error: ${data.error || 'No results found'}</div>`;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-circle me-2"></i>Error: ${error.message}</div>`;

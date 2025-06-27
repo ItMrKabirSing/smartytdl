@@ -1,5 +1,5 @@
-#Copyright @ISmartCoder
-#Updates Channel: https://t.me/TheSmartDevs
+# Copyright @ISmartCoder
+# Updates Channel: https://t.me/TheSmartDevs
 
 from flask import Flask, request, jsonify, render_template, Response
 import requests
@@ -14,12 +14,19 @@ def extract_video_id(url):
         r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/watch\?v=([^&?\s]+)',
         r'(?:https?:\/\/)?youtu\.be\/([^&?\s]+)',
         r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/embed\/([^&?\s]+)',
-        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&?\s]+)'
+        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/v\/([^&?\s]+)',
+        r'(?:https?:\/\/)?(?:www\.)?youtube\.com\/shorts\/([^&?\s]+)'
     ]
     for pattern in patterns:
         match = re.match(pattern, url)
         if match:
             return match.group(1)
+    
+    # fallback attempt with regex search (if query params included)
+    query_match = re.search(r'v=([^&?\s]+)', url)
+    if query_match:
+        return query_match.group(1)
+
     return None
 
 @app.route("/")
@@ -39,7 +46,7 @@ def download():
     if not video_id:
         return jsonify({
             "error": "Invalid YouTube URL.",
-            "contact": "@ISmartCoder & Report Him Bug"
+            "contact": "@ISmartCoder"
         }), 400
 
     standard_url = f"https://www.youtube.com/watch?v={video_id}"
@@ -90,4 +97,3 @@ def download():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-

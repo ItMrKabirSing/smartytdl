@@ -4,7 +4,7 @@ import re
 import json
 from collections import OrderedDict
 app = Flask(__name__)
-YOUTUBE_API_KEY = "AIzaSyClox4nsUjqMT7cqKhaz7asQGeWe5E-1gE"
+YOUTUBE_API_KEY = "AIzaSyBPk2bQL0GVylq-ivLp-SYoBJl_CRYUFM4"
 YOUTUBE_SEARCH_API_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEOS_API_URL = "https://www.googleapis.com/youtube/v3/videos"
 def extract_video_id(url):
